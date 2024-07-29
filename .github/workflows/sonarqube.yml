@@ -1,3 +1,5 @@
+name: Build
+
 on:
   push:
     branches:
@@ -34,10 +36,11 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Install .NET Framework Developer Pack
+      - name: Install .NET Framework 4.6.1 Developer Pack
+        shell: powershell
         run: |
-          curl -L -o netfx-4.6.1-devpack.exe https://download.visualstudio.microsoft.com/download/pr/2a89d01d-d0e8-4e4a-9677-6bc7a8068f2e/bc8bbaaa5894eb9cf89e5a0d2f303f17/dotnetfx461_full_x86_x64devpack.exe
-          ./netfx-4.6.1-devpack.exe /quiet /norestart
+          Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/3f2f9b97-8bb1-4d4e-9ad7-8dfd6dcb108e/88f4147b7e6f9ba2ba4a3b3b3b8b09a8/ndp461-devpack-enu.exe" -OutFile "ndp461-devpack-enu.exe"
+          Start-Process -FilePath "ndp461-devpack-enu.exe" -ArgumentList "/quiet" -Wait
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
