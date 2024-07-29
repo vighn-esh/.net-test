@@ -1,51 +1,28 @@
-name: Build
+name: SonarScanner for .NET 8 with pull request decoration support
 
 on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  build:
-    name: Build
-    runs-on: windows-latest
+  run-sonarscan:
+    runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.11
-      - name: Cache SonarQube packages
-        uses: actions/cache@v1
-        with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache SonarQube scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v1
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
-      - name: Install SonarQube scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run SonarScanner in Docker
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Install .NET Framework 4.6.1 Developer Pack
-        shell: powershell
-        run: |
-          Invoke-WebRequest -Uri "https://aka.ms/msbuild/developerpacks/net461" -OutFile "ndp461-devpack-enu.exe"
-          Start-Process -FilePath "ndp461-devpack-enu.exe" -ArgumentList "/quiet" -Wait
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        shell: powershell
-        run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:".net-test" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
-          dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          docker run --rm -v ${{ github.workspace }}:/workspace \
+                        -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
+                        -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+                        -e SONAR_PROJECT_KEY=${{ ".net-test"  }} \
+                        -e SONAR_PROJECT_NAME=${{ ".net-test"  }} \
+                        -e SONAR_HOSTNAME=${{ secrets.SONAR_HOSTNAME }} \
+                        highbyte/sonarscan-dotnet:latest \
+                        /bin/bash -c "cd /workspace && ./entrypoint.sh"
