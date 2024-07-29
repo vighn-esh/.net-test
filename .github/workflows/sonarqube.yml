@@ -24,9 +24,9 @@ jobs:
             -e SONAR_TOKEN=$SONAR_TOKEN \
             -v "$(pwd):/app" \
             vighneshak/sonar-scanner-dotnet \
-            sonar-scanner \
-              -Dsonar.projectKey=dot-net-test \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.login=$SONAR_TOKEN
+            dotnet-sonarscanner begin /k:"dot-net-test" /d:sonar.host.url="$SONAR_HOST_URL" /d:sonar.login="$SONAR_TOKEN" /d:sonar.exclusions="**/node_modules/**"
+          docker run --rm \
+            -v "$(pwd):/app" \
+            vighneshak/sonar-scanner-dotnet \
+            dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
