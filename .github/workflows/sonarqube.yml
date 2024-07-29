@@ -1,4 +1,4 @@
-name: Build, Push, and Run Docker Container
+name: Run SonarScanner
 
 on:
   push:
@@ -7,33 +7,21 @@ on:
     branches: [ master ]
 
 jobs:
-  build_and_push:
+  run_sonarscanner:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Check out the repository
+      uses: actions/checkout@v4
 
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+    - name: Pull Docker image
+      run: docker pull vighneshak/sonar-scanner-dotnet:latest
 
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_HUB_USERNAME }}/sonar-scanner-dotnet:latest
-
-    - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/sonar-scanner-dotnet:latest
-
-  run_container:
-    runs-on: ubuntu-latest
-    needs: build_and_push
-
-    steps:
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-    - name: Run Docker container
+    - name: Run SonarScanner
       run: |
-        docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/sonar-scanner-dotnet:latest
         docker run --rm \
           -e SONAR_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
           -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
-          ${{ secrets.DOCKER_HUB_USERNAME }}/sonar-scanner-dotnet:latest
+          vighneshak/sonar-scanner-dotnet:latest \
+          begin /k:"your_project_key" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+
