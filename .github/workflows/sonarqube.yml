@@ -23,5 +23,5 @@ jobs:
           -e SONAR_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
           -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
           vighneshak/sonar-scanner-dotnet:latest \
-          begin /k:"your_project_key" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}
+          begin /k:"dot-net-test" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=${{ secrets.SONAR_HOST_URL }}
 
