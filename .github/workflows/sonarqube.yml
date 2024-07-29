@@ -39,7 +39,7 @@ jobs:
       - name: Install .NET Framework 4.6.1 Developer Pack
         shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://download.visualstudio.microsoft.com/download/pr/3f2f9b97-8bb1-4d4e-9ad7-8dfd6dcb108e/88f4147b7e6f9ba2ba4a3b3b3b8b09a8/ndp461-devpack-enu.exe" -OutFile "ndp461-devpack-enu.exe"
+          Invoke-WebRequest -Uri "https://aka.ms/msbuild/developerpacks/net461" -OutFile "ndp461-devpack-enu.exe"
           Start-Process -FilePath "ndp461-devpack-enu.exe" -ArgumentList "/quiet" -Wait
       - name: Build and analyze
         env:
