@@ -21,8 +21,16 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/workspace \
                         -e SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} \
                         -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-                        -e SONAR_PROJECT_KEY=${{ ".net-test"  }} \
-                        -e SONAR_PROJECT_NAME=${{ ".net-test"  }} \
+                        -e SONAR_PROJECT_KEY=${{ secrets.SONAR_PROJECT_KEY }} \
+                        -e SONAR_PROJECT_NAME=${{ secrets.SONAR_PROJECT_NAME }} \
                         -e SONAR_HOSTNAME=${{ secrets.SONAR_HOSTNAME }} \
                         highbyte/sonarscan-dotnet:latest \
                         /bin/bash -c "cd /workspace && ./entrypoint.sh"
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+  SONAR_PROJECT_NAME: ${{ secrets.SONAR_PROJECT_NAME }}
+  SONAR_HOSTNAME: ${{ secrets.SONAR_HOSTNAME }}
+
