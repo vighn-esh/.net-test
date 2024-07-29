@@ -14,19 +14,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run SonarQube scanner using Docker
+      - name: Build Docker image
+        run: |
+          docker build -t my-sonar-scanner-image .
+
+      - name: Run Docker container interactively
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          docker run --rm \
+          docker run -it --rm \
             -e SONAR_HOST_URL=$SONAR_HOST_URL \
             -e SONAR_TOKEN=$SONAR_TOKEN \
-            -v "$(pwd):/usr/src" \
-            sonarsource/sonar-scanner-cli \
-            sonar-scanner \
-              -Dsonar.projectKey=dot-net-test \
-              -Dsonar.sources=/usr/src \
-              -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.login=$SONAR_TOKEN
+            -v "$(pwd):/app" \
+            --entrypoint /bin/sh \
+            my-sonar-scanner-image
 
+      - name: Verify directory structure
+        run: |
+          ls -la /app
