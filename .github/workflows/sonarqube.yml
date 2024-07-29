@@ -21,5 +21,8 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           docker run --rm -e SONAR_TOKEN -e SONAR_HOST_URL -v ${{ github.workspace }}:/src -w /src vighneshak/sonar-scanner-dotnet \
-            sh -c ".sonar/scanner/dotnet-sonarscanner begin /k:\"tester-dotnet\" /d:sonar.login=\"$SONAR_TOKEN\" /d:sonar.host.url=\"$SONAR_HOST_URL\" && \
-                  .sonar/scanner/dotnet-sonarscanner end /d:sonar.login=\"$SONAR_TOKEN\""
+            .sonar/scanner/dotnet-sonarscanner begin /k:"tester-dotnet" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL"
+          docker run --rm -e SONAR_TOKEN -e SONAR_HOST_URL -v ${{ github.workspace }}:/src -w /src vighneshak/sonar-scanner-dotnet \
+            dotnet build
+          docker run --rm -e SONAR_TOKEN -e SONAR_HOST_URL -v ${{ github.workspace }}:/src -w /src vighneshak/sonar-scanner-dotnet \
+            .sonar/scanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
