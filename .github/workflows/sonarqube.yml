@@ -19,16 +19,16 @@ jobs:
         with:
           dotnet-version: '6.0.x'  # Use .NET 6 SDK
 
-      - name: Install .NET Framework Developer Pack 3.5
+      - name: Install .NET Framework 3.5 using DISM
         run: |
-          choco install netfx-3.5-devpack
+          DISM /Online /Enable-Feature /FeatureName:NetFx3 /All
 
       - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '17'
-      
+
       - name: Install SonarScanner for .NET
         run: |
           dotnet tool install --global dotnet-sonarscanner --version 5.3.0
