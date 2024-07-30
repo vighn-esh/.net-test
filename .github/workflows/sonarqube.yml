@@ -14,10 +14,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up .NET
+      - name: Set up .NET 6.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'  # Use .NET 6 SDK
+          dotnet-version: '6.0.x'
+
+      - name: Set up .NET 5.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
 
       - name: Install .NET Framework 3.5 using DISM
         run: |
@@ -49,3 +54,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
