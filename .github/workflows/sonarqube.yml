@@ -28,6 +28,10 @@ jobs:
         run: |
           DISM /Online /Enable-Feature /FeatureName:NetFx3 /All
 
+      - name: Install Visual Studio Build Tools
+        run: |
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --includeRecommended --includeOptional"
+        
       - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
@@ -47,11 +51,11 @@ jobs:
 
       - name: Build project
         run: |
-          MSBuild.exe /t:Rebuild /p:TargetFrameworkVersion=v3.5 /p:Configuration=Release /p:Platform="Any CPU"
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" /t:Rebuild /p:TargetFrameworkVersion=v3.5 /p:Configuration=Release /p:Platform="Any CPU"
 
       - name: Run SonarQube scan - end
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet
 
